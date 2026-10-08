@@ -1,0 +1,157 @@
+{
+  "info": {
+    "name": "FoodRescue API",
+    "description": "Minimal Postman collection for FoodRescue semester seminar project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "jwtToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Register (Donor)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Alice Donor\",\n  \"email\": \"donor@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"9876543210\",\n  \"role\": \"DONOR\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register"
+      }
+    },
+    {
+      "name": "2. Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"donor@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "3. Get Donations (Paginated & Sorted)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/donations?page=0&size=10&sortBy=createdAt&direction=desc"
+      }
+    },
+    {
+      "name": "4. Create Donation",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"foodName\": \"Fresh Meals\",\n  \"foodCategory\": \"Prepared Meals\",\n  \"quantity\": 20,\n  \"pickupAddress\": \"123 Main Street\",\n  \"availableUntil\": \"2026-10-10T18:00:00\",\n  \"description\": \"Fresh lunch packages\"\n}"
+        },
+        "url": "{{baseUrl}}/api/donations"
+      }
+    },
+    {
+      "name": "5. Update Donation",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"foodName\": \"Fresh Meals Updated\",\n  \"foodCategory\": \"Prepared Meals\",\n  \"quantity\": 25,\n  \"pickupAddress\": \"123 Main Street\",\n  \"availableUntil\": \"2026-10-10T20:00:00\",\n  \"description\": \"Updated quantity\"\n}"
+        },
+        "url": "{{baseUrl}}/api/donations/1"
+      }
+    },
+    {
+      "name": "6. Delete Donation",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/donations/1"
+      }
+    },
+    {
+      "name": "7. Create Request (NGO)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"donationId\": 1,\n  \"requestedQuantity\": 15,\n  \"message\": \"Urgent requirement for evening shelter\"\n}"
+        },
+        "url": "{{baseUrl}}/api/requests"
+      }
+    },
+    {
+      "name": "8. Accept Request (Donor)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/requests/1/accept"
+      }
+    },
+    {
+      "name": "9. Reject Request (Donor)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/requests/1/reject"
+      }
+    },
+    {
+      "name": "10. Volunteer Task (Update Status)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"PICKED_UP\"\n}"
+        },
+        "url": "{{baseUrl}}/api/volunteers/tasks/1/status"
+      }
+    },
+    {
+      "name": "11. Admin Statistics",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/admin/statistics"
+      }
+    }
+  ]
+}
