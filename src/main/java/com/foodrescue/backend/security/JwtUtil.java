@@ -23,10 +23,23 @@ public class JwtUtil {
     private long jwtExpiration;
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(
-                java.util.Base64.getEncoder().encodeToString(jwtSecret.getBytes())
-        );
-        return Keys.hmacShaKeyFor(keyBytes);
+        byte[] raw;
+        if (jwtSecret != null && !jwtSecret.isBlank()) {
+            raw = jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        } else {
+            raw = "FoodRescueSecureJWTSecretKeyAtLeast32BytesForProduction2026".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        }
+
+        // Ensure key is at least 32 bytes (256 bits) to prevent WeakKeyException
+        if (raw.length < 32) {
+            byte[] padded = new byte[32];
+            System.arraycopy(raw, 0, padded, 0, raw.length);
+            for (int i = raw.length; i < 32; i++) {
+                padded[i] = (byte) ('x' + (i % 5));
+            }
+            raw = padded;
+        }
+        return Keys.hmacShaKeyFor(raw);
     }
 
     public String generateToken(String email, String role) {

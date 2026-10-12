@@ -56,10 +56,25 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.UNAUTHORIZED, "Authentication required", null);
     }
 
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    public ResponseEntity<Map<String, Object>> handleDatabaseError(org.springframework.dao.DataAccessException ex) {
+        log.error("Database error: {}", ex.getMessage(), ex);
+        String msg = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + msg, null);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {
         log.error("Unexpected error: {}", ex.getMessage(), ex);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", null);
+        String detail = ex.getMessage();
+        Throwable root = ex;
+        while (root.getCause() != null) {
+            root = root.getCause();
+            if (root.getMessage() != null && !root.getMessage().isBlank()) {
+                detail = root.getMessage();
+            }
+        }
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, detail != null ? detail : "An unexpected error occurred", null);
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message, Object data) {
